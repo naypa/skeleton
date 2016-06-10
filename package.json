@@ -1,0 +1,27 @@
+{
+  "name": "Toto",
+  "main": "toto",
+  "description": "Test javascript",
+  "version": "0.1.0",
+  "dependencies": {
+    "jquery": "*",
+    "jquery-ui": "*",
+    "requirejs": "*",
+    "raphael": "*",
+    "eve": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/naypa/toto.git"
+  },
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-bower": "*",
+    "grunt-contrib-clean": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-cssmin": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-requirejs": "*"
+  }
+}

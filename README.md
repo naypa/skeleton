@@ -1,0 +1,1 @@
+skeleton of js project
