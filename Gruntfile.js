@@ -17,9 +17,9 @@ module.exports = function(grunt) {
       options: {
       }
     },
-      
+    
     uglify: {
-      dist_main: {
+      build: {
         options: {
           banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
           mangle: {
@@ -27,81 +27,106 @@ module.exports = function(grunt) {
           }
         },
         files: {
-          '<%= dirs.build %>/js/test1_min.js':  ['<%= dirs.build %>/js/test1.js']
+          '<%= dirs.build %>/optimized/public_html/js/test1.js':  ['<%= dirs.build %>/public_html/js/test1.js']
         }
       }
     },
     
     cssmin: {
-      dist: {
-        expand: true,
-        cwd: '<%= dirs.build %>/css/',
-        src: ['**/*.css', '!**.*.min.css'],
-        dest: '<%= dirs.dist %>/public_html/css/',
-        ext: '.css'
+      build: {
+        options: {
+          banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
+          mangle: {
+            except: [] // tableau de noms de variables (chaines de caractères)
+          }
+        },
+        files: [
+          {
+            expand: true,
+            cwd: '<%= dirs.build %>/public_html/css/',
+            src: ['**/*.css', '!**/*.min.css'],
+            dest: '<%= dirs.build %>/optimized/public_html/css/',
+            ext: '.css'
+          }
+        ]
       }
     },
     
     copy: {
-      html_src: {
+      build: {
         files: [
+          // html
           {
             expand: true, 
             cwd: '<%= dirs.src %>/html/', 
-            src: [
-              '**/*.html'
-            ],
-            dest: '<%= dirs.dist %>/public_html/'
-          }
-        ]
-      },
-      css_src: {
-        files: [
+            src: ['**/*.html'],
+            dest: '<%= dirs.build %>/public_html/'
+          },
+          // css
           {
             expand: true, 
             cwd: '<%= dirs.src %>/css/', 
-            src: [
-              '**/*.css'
-            ],
-            dest: '<%= dirs.build %>/css/'
-          }
-        ]
-      },
-      js_mine_src: {
-        files: [
+            src: ['**/*.css'],
+            dest: '<%= dirs.build %>/public_html/css/'
+          },
+          // js mine
           {
             expand: true, 
             cwd: '<%= dirs.src %>/js/', 
             src: [
               'test1.js'
             ], 
-            dest: '<%= dirs.build %>/js/'
-          }
-        ]
-      },
-      js_deps_src: {
-        files: [
+            dest: '<%= dirs.build %>/public_html/js/'
+          },
+          // js deps
           {
             src: '<%= dirs.npm %>/requirejs/require.js', 
-            dest: '<%= dirs.build %>/js/lib/require.js'
+            dest: '<%= dirs.build %>/public_html/js/lib/require.js'
           },             
           {
             src: '<%= dirs.npm %>/eve/eve.js', 
-            dest: '<%= dirs.build %>/js/lib/eve.js'
+            dest: '<%= dirs.build %>/public_html/js/lib/eve.js'
           },             
           {
             src: '<%= dirs.npm %>/raphael/raphael.no-deps.js', 
-            dest: '<%= dirs.build %>/js/lib/raphael.js'
+            dest: '<%= dirs.build %>/public_html/js/lib/raphael.js'
           }
         ]
       },
-      js_dist_src: {
+      build_optimized: {
+        files: [
+          { 
+            expand: true, 
+            cwd: '<%= dirs.build %>/public_html/', 
+            src: ['*.html', '**/*.*'], 
+            dest: '<%= dirs.build %>/optimized/public_html/'
+          }
+        ]
+      },
+      dist: {
         files: [
           {
             expand: true, 
-            cwd: '<%= dirs.build %>/js/', 
-            src: ['**/*.js'],
-            dest: '<%= dirs.dist %>/public_html/js/'
+            cwd: '<%= dirs.build %>/optimized/public_html/', 
+            src: [],
+            dest: '<%= dirs.dist %>'
+          }
+        ]
+      }
+    },
+    
+    htmlmin: {
+      build: {
+        options: {
+          removeComments: true,
+          collapseWhitespace: true
+        },
+        files: [
+          {
+            expand: true,
+            cwd: '<%= dirs.src %>/html/',
+            src: ['*.html', '**/*.html'],
+            dest: '<%= dirs.build %>/optimized/public_html/',
           }
         ]
       }
@@ -121,12 +146,20 @@ module.exports = function(grunt) {
   
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   
-  grunt.registerTask('build', ['clean', 'copy:js_mine_src', 'copy:js_deps_src']);
+  grunt.loadNpmTasks('grunt-contrib-htmlmin');
   
-    
+  grunt.registerTask('build', [
+                       'test', 
+                       'clean',
+                       'copy:build', 'copy:build_optimized',
+                       'uglify',
+                       'cssmin',
+                       'htmlmin'
+                     ]);
+  
   grunt.registerTask('test', ['jshint']);
   
-  grunt.registerTask('dist', ['test', 'build', 'copy:html_src', 'copy:css_src', 'cssmin', 'uglify:dist_main', 'copy:js_dist_src']);
+  grunt.registerTask('dist', ['build', 'copy:dist']);
   
   grunt.registerTask('default', ['test', 'clean']);
 };

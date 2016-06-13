@@ -22,6 +22,7 @@
     "grunt-contrib-cssmin": "*",
     "grunt-contrib-jshint": "*",
     "grunt-contrib-uglify": "*",
-    "grunt-contrib-requirejs": "*"
+    "grunt-contrib-requirejs": "*",
+    "grunt-contrib-htmlmin": "*"
   }
 }
